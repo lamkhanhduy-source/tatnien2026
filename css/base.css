@@ -1,0 +1,145 @@
+/* =====================================================================
+   base.css - NỀN TẢNG GIAO DIỆN
+   ---------------------------------------------------------------------
+   Chứa: biến màu/font, reset, kiểu chữ chung, khung trang, nút bấm,
+   hiệu ứng "hiện dần khi cuộn", và tùy chọn giảm chuyển động.
+   Các file css khác dùng lại các biến (--gold, --text...) khai báo ở đây,
+   vì vậy file này phải được nạp TRƯỚC.
+   ===================================================================== */
+
+/* ---------- 1. BIẾN THIẾT KẾ (đổi màu cả trang chỉ cần sửa ở đây) ---------- */
+:root {
+  color-scheme: dark;            /* báo trình duyệt: giao diện tối (ô nhập, thanh cuộn) */
+
+  --ink: #16060a;                /* nền trang: đen ánh đỏ rượu */
+  --wine: #2a0a12;               /* nền các khung nổi */
+  --crimson: #8e1f31;            /* đỏ chủ đạo (phong bì, con dấu) */
+  --gold: #d8b46e;               /* vàng nhấn chính */
+  --champagne: #f3e4c2;          /* vàng nhạt cho tiêu đề, giấy thư */
+  --text: #f2e8d5;               /* chữ nội dung */
+  --muted: #bfa98c;              /* chữ phụ, mờ hơn */
+  --line: rgba(216, 180, 110, .32); /* đường viền vàng mảnh */
+
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;           /* tiêu đề */
+  --font-body: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif; /* nội dung */
+}
+
+/* ---------- 2. RESET CƠ BẢN ---------- */
+* { box-sizing: border-box; }    /* padding/border nằm TRONG chiều rộng đã đặt */
+html { scroll-behavior: smooth; }/* cuộn mượt khi nhảy tới mục */
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  /* Hai quầng sáng: đỏ ở trên đỉnh, vàng nhạt bên phải, tạo chiều sâu */
+  background-image:
+    radial-gradient(120% 60% at 50% -10%, rgba(142, 31, 49, .55), transparent 60%),
+    radial-gradient(80% 40% at 100% 40%, rgba(216, 180, 110, .06), transparent 70%);
+  /* Chừa chỗ tai thỏ / thanh home trên điện thoại (0 trên máy tính) */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Thuộc tính hidden luôn có hiệu lực, kể cả khi phần tử có display: grid/flex
+   (ví dụ ô "số người" và nút nhạc được ẩn/hiện bằng JS qua thuộc tính này). */
+[hidden] { display: none !important; }
+
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 {
+  font-family: var(--font-display);
+  color: var(--champagne);
+  text-wrap: balance;            /* cân bằng độ dài các dòng tiêu đề */
+  font-weight: 600;
+  line-height: 1.1;
+}
+a { color: var(--gold); }
+
+/* Viền focus rõ ràng cho người dùng bàn phím */
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+
+/* ---------- 3. KHUNG TRANG ---------- */
+.wrap {
+  max-width: 640px;              /* cột hẹp như tấm thiệp, đọc thoải mái */
+  margin-inline: auto;           /* căn giữa */
+  /* Lề trái/phải tối thiểu 16px, lớn hơn nếu máy có viền cong/tai thỏ */
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 96px;         /* chừa chỗ dưới cho nút nhạc nổi */
+}
+
+/* ---------- 4. THÀNH PHẦN DÙNG CHUNG ---------- */
+/* Nhãn nhỏ viết hoa phía trên tiêu đề mục */
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+}
+
+/* Mỗi mục lớn của trang */
+.sec { padding-block: 56px 8px; }
+
+/* Đầu mục: nhãn nhỏ + tiêu đề, căn giữa */
+.sec-head {
+  display: flex; flex-direction: column; gap: 10px;
+  align-items: center; text-align: center;
+  margin-bottom: 28px;
+}
+.sec-head h2 { font-size: clamp(30px, 8vw, 40px); } /* co giãn theo bề rộng màn hình */
+
+/* Đường trang trí: vạch - hình thoi - vạch */
+.orn { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--gold); margin-block: 6px; }
+.orn i { display: block; height: 1px; width: 56px; background: linear-gradient(90deg, transparent, var(--gold)); }
+.orn i:last-child { transform: scaleX(-1); } /* lật vạch bên phải cho đối xứng */
+.orn svg { width: 12px; height: 12px; flex: none; }
+
+/* Tiện ích nhỏ dùng trong HTML */
+.no-caps { text-transform: none !important; } /* tắt viết hoa chữ đầu */
+.no-top { margin-top: 0 !important; }
+
+/* ---------- 5. NÚT BẤM ---------- */
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.btn {
+  appearance: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer;
+  font: 500 13px/1 var(--font-body);
+  letter-spacing: .08em; text-transform: uppercase; text-decoration: none;
+  padding: 13px 20px; border-radius: 999px;
+  border: 1px solid var(--gold); color: var(--gold); background: transparent;
+  transition: background .2s, color .2s, transform .2s;
+  min-height: 44px;              /* đủ lớn để chạm bằng ngón tay */
+}
+.btn:hover { background: rgba(216, 180, 110, .12); }
+/* Nút chính: nền vàng đặc */
+.btn.solid { background: linear-gradient(180deg, #e4c37f, #c29a52); color: #3a0d14; border-color: transparent; font-weight: 600; }
+.btn.solid:hover { background: linear-gradient(180deg, #efd091, #cfa75d); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+
+/* ---------- 6. HIỆN DẦN KHI CUỘN ----------
+   Chỉ "kích hoạt" khi JS đã chạy (thẻ <html> có class "anim"), để nếu JS
+   lỗi thì nội dung vẫn hiển thị bình thường. js/reveal.js thêm class "in". */
+.anim .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .9s ease, transform .9s cubic-bezier(.2, .7, .2, 1);
+}
+.anim .reveal.in { opacity: 1; transform: none; }
+
+/* ---------- 7. GIẢM CHUYỂN ĐỘNG ----------
+   Người dùng bật "giảm hiệu ứng" trong hệ điều hành: tắt gần hết animation. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0s !important;
+  }
+  html { scroll-behavior: auto; }
+}

@@ -1,0 +1,99 @@
+/* =====================================================================
+   rsvp.css - FORM XÁC NHẬN + TƯỜNG LỜI CHÚC
+   ---------------------------------------------------------------------
+   Phần 1: các ô của form (ô nhập, nút chọn, bộ đếm số người).
+   Phần 2: thống kê, chấm "trực tiếp", danh sách lời chúc.
+   ===================================================================== */
+
+/* ---------- FORM ---------- */
+form { display: grid; gap: 18px; }
+.field { display: grid; gap: 8px; min-width: 0; }
+.field > label, .field > legend {
+  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--gold); font-weight: 500; padding: 0;
+}
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+
+/* Ô nhập chữ + ô nhiều dòng. font-size 16px để iPhone KHÔNG tự phóng to khi chạm vào. */
+input[type=text], textarea {
+  width: 100%;
+  font: 400 16px/1.5 var(--font-body);
+  color: var(--text);
+  background: rgba(16, 4, 8, .6);
+  border: 1px solid var(--line); border-radius: 10px; padding: 13px 14px;
+  transition: border-color .2s, box-shadow .2s;
+}
+input[type=text]::placeholder, textarea::placeholder { color: #8f7b63; }
+input[type=text]:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(216, 180, 110, .18); }
+textarea { min-height: 104px; resize: vertical; }
+
+/* Hai lựa chọn "Sẽ tham dự / Không thể tham dự" - radio thật bị ẩn (opacity 0)
+   nhưng vẫn bấm và focus được; <span> bên cạnh được tô như nút. */
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choice { position: relative; display: block; }
+.choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.choice span {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  min-height: 52px; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: rgba(16, 4, 8, .6);
+  font-size: 14px; font-weight: 500; color: var(--muted); transition: all .2s;
+}
+/* Khi radio được chọn -> <span> kế bên đổi sang nền vàng */
+.choice input:checked + span { background: linear-gradient(180deg, #e4c37f, #c29a52); color: #3a0d14; border-color: transparent; font-weight: 600; }
+.choice input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* Bộ đếm số người: [-] 1 [+] */
+.stepper {
+  display: inline-grid; grid-template-columns: 48px 64px 48px; align-items: stretch;
+  border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+  background: rgba(16, 4, 8, .6); width: fit-content;
+}
+.stepper button { appearance: none; border: 0; background: transparent; color: var(--gold); font-size: 22px; cursor: pointer; min-height: 48px; }
+.stepper button:hover { background: rgba(216, 180, 110, .12); }
+.stepper output { display: grid; place-items: center; font-family: var(--font-display); font-size: 26px; color: var(--champagne); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.counter { font-size: 12px; color: var(--muted); text-align: right; } /* "12/300" */
+
+/* Dòng thông báo: xám (đang gửi), xanh (thành công), đỏ nhạt (lỗi) */
+.msg { font-size: 13.5px; min-height: 1.4em; color: var(--muted); }
+.msg.ok  { color: #b9dba0; }
+.msg.err { color: #f0a3a3; }
+
+/* ---------- THỐNG KÊ 3 Ô ---------- */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.stat { text-align: center; padding: 14px 4px; border: 1px solid var(--line); border-radius: 10px; background: rgba(16, 4, 8, .45); min-width: 0; }
+.stat b { display: block; font-family: var(--font-display); font-size: 34px; line-height: 1; color: var(--champagne); font-variant-numeric: tabular-nums; }
+.stat span { display: block; margin-top: 6px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- CHẤM "TRỰC TIẾP" ---------- */
+.wall-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+.live { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.live i { width: 7px; height: 7px; border-radius: 50%; background: #7fcf7a; box-shadow: 0 0 0 0 rgba(127, 207, 122, .6); animation: livePing 2s infinite; }
+.live.off i { background: #8f7b63; animation: none; }   /* chưa kết nối: chấm xám, đứng yên */
+@keyframes livePing { 70% { box-shadow: 0 0 0 8px rgba(127, 207, 122, 0); } 100% { box-shadow: 0 0 0 0 rgba(127, 207, 122, 0); } }
+
+/* ---------- DANH SÁCH LỜI CHÚC ---------- */
+/* Cao tối đa 460px, vượt quá thì cuộn riêng bên trong (trang không bị kéo dài mãi) */
+.wall {
+  list-style: none; margin: 0; padding: 0 4px 0 0;
+  display: grid; gap: 10px;
+  max-height: 460px; overflow-y: auto;
+  overscroll-behavior: contain;          /* cuộn hết danh sách không kéo cả trang */
+  scrollbar-width: thin; scrollbar-color: var(--gold) transparent;
+}
+.entry { display: grid; grid-template-columns: 40px 1fr; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(16, 4, 8, .5); min-width: 0; }
+/* Lời chúc MỚI vừa tới: sáng vàng rồi nhạt dần, trượt nhẹ từ trên xuống */
+.entry.fresh { animation: entryFresh 1.6s ease-out; }
+@keyframes entryFresh { from { background: rgba(216, 180, 110, .28); transform: translateY(-6px); } to { background: rgba(16, 4, 8, .5); transform: none; } }
+
+/* Ảnh đại diện tròn: chữ cái đầu của tên (màu nền do JS chọn) */
+.av { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 19px; color: #2a0a12; }
+.entry .top { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+.entry .who { font-weight: 600; color: var(--champagne); overflow-wrap: anywhere; } /* tên dài tự xuống dòng */
+.chip { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.chip.yes { color: #b9dba0; border-color: rgba(185, 219, 160, .4); }  /* tham dự: xanh lá nhạt */
+.chip.no  { color: #e8b4a6; border-color: rgba(232, 180, 166, .4); }  /* vắng: hồng nhạt */
+.entry .wish { margin-top: 6px; overflow-wrap: anywhere; white-space: pre-wrap; } /* giữ xuống dòng người viết */
+.entry .when { margin-top: 6px; font-size: 12px; color: var(--muted); display: flex; gap: 12px; align-items: center; }
+.entry .del { appearance: none; background: none; border: 0; color: #e8b4a6; font: inherit; font-size: 12px; cursor: pointer; padding: 2px 0; text-decoration: underline; }
+.empty { text-align: center; color: var(--muted); padding: 28px 12px; border: 1px dashed var(--line); border-radius: 12px; }

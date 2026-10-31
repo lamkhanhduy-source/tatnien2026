@@ -1,0 +1,109 @@
+/* =====================================================================
+   envelope.css - MÀN HÌNH PHONG BÌ MỞ THƯ
+   ---------------------------------------------------------------------
+   Cấu trúc phong bì (từ sau ra trước, theo z-index):
+     .env-back  (mặt sau, màu đỏ sẫm)
+     .letter    (lá thư, z-index 2, trượt lên khi mở)
+     .pocket    (mặt trước, z-index 3, có khuyết chữ V che thân thư)
+     .flap      (nắp, z-index 4, lật 180° khi mở rồi tụt ra sau thư)
+     .seal      (con dấu sáp, z-index 5, mờ đi khi mở)
+   Trạng thái do js/envelope.js điều khiển qua class trên .intro:
+     .open = chạy hoạt ảnh mở;   .gone = mờ dần và ẩn hẳn.
+   ===================================================================== */
+
+/* Lớp phủ toàn màn hình */
+.intro {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 34px;
+  /* Chừa vùng an toàn quanh màn hình (tai thỏ, thanh home) */
+  padding:
+    max(16px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+  background: radial-gradient(90% 70% at 50% 35%, #5a1220 0%, #2a0a12 55%, #16060a 100%);
+  /* Mờ dần 0.7s; "visibility" đổi sau cùng để không chặn thao tác bên dưới */
+  transition: opacity .7s ease, visibility 0s .7s;
+}
+.intro.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* Dòng chữ phía trên phong bì */
+.intro-title { text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.intro-title b {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 7vw, 34px);
+  font-weight: 600; color: var(--champagne); letter-spacing: .04em;
+}
+
+/* Khung phong bì: tỉ lệ 3:2, rộng tối đa 360px.
+   perspective tạo chiều sâu 3D cho cú lật nắp. */
+.env {
+  position: relative;
+  width: min(84vw, 360px);
+  aspect-ratio: 3 / 2;
+  perspective: 1100px;
+  cursor: pointer;
+  /* Xóa kiểu mặc định của <button> */
+  border: 0; padding: 0; background: none; font: inherit; color: inherit;
+}
+
+/* Mặt sau + bóng đổ */
+.env-back { position: absolute; inset: 0; background: #6f1424; border-radius: 6px; box-shadow: 0 24px 60px rgba(0, 0, 0, .55); }
+
+/* Lá thư (giấy màu champagne, viền đôi) */
+.letter {
+  position: absolute; left: 7%; right: 7%; top: 8%; bottom: 6%; z-index: 2;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #f7ecd0, #ead7a9);
+  color: #5a1220;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; text-align: center;
+  /* Trượt lên sau 0.55s (đợi nắp mở xong một phần) */
+  transition: transform 1s cubic-bezier(.2, .7, .2, 1) .55s;
+  box-shadow: inset 0 0 0 5px #f7ecd0, inset 0 0 0 6px rgba(142, 31, 49, .35);
+}
+.letter small { font-size: 10px; letter-spacing: .3em; text-transform: uppercase; font-weight: 500; }
+.letter strong { font-family: var(--font-display); font-size: clamp(22px, 6vw, 28px); line-height: 1.05; font-weight: 700; }
+
+/* Mặt trước phong bì: clip-path cắt hình đa giác có khuyết chữ V ở trên
+   (điểm: góc trái trên -> giữa chữ V -> góc phải trên -> góc phải dưới -> trái dưới) */
+.pocket {
+  position: absolute; inset: 0; z-index: 3; border-radius: 6px;
+  background: linear-gradient(160deg, #a02438, #7a1627);
+  clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Nắp: hình tam giác chỉ xuống, xoay quanh cạnh trên (transform-origin) */
+.flap {
+  position: absolute; left: 0; right: 0; top: 0; height: 60%; z-index: 4;
+  transform-origin: 50% 0;
+  background: linear-gradient(180deg, #b02a3f, #8e1f31);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  /* Sau 0.4s mới đổi z-index để nắp chui ra sau lá thư khi đã lật */
+  transition: transform .8s cubic-bezier(.5, 0, .2, 1), z-index 0s .4s;
+}
+
+/* Con dấu sáp tròn ở đầu nắp */
+.seal {
+  position: absolute; left: 50%; top: 57%; z-index: 5;
+  transform: translate(-50%, -50%);
+  width: 54px; height: 54px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 35% 30%, #f1d99b, #c19a4f 70%);
+  color: #5a1220;
+  font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: .02em;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .45), inset 0 0 0 3px rgba(255, 255, 255, .18);
+  transition: opacity .3s ease, transform .4s ease;
+}
+.env:hover .seal { transform: translate(-50%, -50%) scale(1.06); } /* con dấu nhích to khi rê chuột */
+
+/* Dòng gợi ý nhấp nháy nhẹ */
+.hint { font-size: 12px; letter-spacing: .24em; text-transform: uppercase; color: var(--muted); animation: hintPulse 2.2s ease-in-out infinite; }
+@keyframes hintPulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+
+/* ----- TRẠNG THÁI ĐÃ MỞ (class .open được thêm bằng JS) ----- */
+.intro.open .flap  { transform: rotateX(180deg); z-index: 1; }            /* lật nắp ra sau */
+.intro.open .letter { transform: translateY(-58%); }                       /* thư trượt lên */
+.intro.open .seal  { opacity: 0; transform: translate(-50%, -50%) scale(.6); } /* dấu nhỏ dần và biến mất */
+.intro.open .hint  { animation: none; opacity: 0; }                        /* ẩn dòng gợi ý */

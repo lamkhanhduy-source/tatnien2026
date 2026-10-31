@@ -1,0 +1,36 @@
+/* =====================================================================
+   player.css - NÚT BẬT/TẮT NHẠC NỀN
+   ---------------------------------------------------------------------
+   Nút tròn cố định ở góc phải dưới. Khi nhạc phát (class "on"),
+   biểu tượng nốt nhạc đổi thành 4 thanh nhảy theo nhịp.
+   Logic phát nhạc nằm ở js/music.js.
+   ===================================================================== */
+
+.music {
+  position: fixed; z-index: 60;
+  /* Cách mép 16px, cộng thêm vùng an toàn của điện thoại */
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: 52px; height: 52px; border-radius: 50%;
+  cursor: pointer; display: grid; place-items: center;
+  border: 1px solid var(--gold); color: var(--gold);
+  background: rgba(42, 10, 18, .92);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+  transition: transform .2s, background .2s;
+}
+.music:hover { transform: scale(1.06); }
+.music svg { width: 22px; height: 22px; }
+.music[hidden] { display: none; }  /* thuộc tính hidden luôn thắng display:grid ở trên */
+
+/* 4 thanh equalizer, mặc định ẩn */
+.music .bars { display: none; gap: 3px; align-items: flex-end; height: 20px; }
+.music .bars i { display: block; width: 3px; background: var(--gold); border-radius: 2px; animation: eq 1s ease-in-out infinite; }
+/* Mỗi thanh lệch pha để nhìn tự nhiên */
+.music .bars i:nth-child(2) { animation-delay: .2s; }
+.music .bars i:nth-child(3) { animation-delay: .4s; }
+.music .bars i:nth-child(4) { animation-delay: .1s; }
+@keyframes eq { 0%, 100% { height: 5px; } 50% { height: 20px; } }
+
+/* Đang phát: hiện thanh, ẩn biểu tượng nốt nhạc */
+.music.on .bars { display: flex; }
+.music.on svg { display: none; }

@@ -1,0 +1,124 @@
+/* =====================================================================
+   sections.css - GIAO DIỆN CÁC MỤC NỘI DUNG
+   ---------------------------------------------------------------------
+   Gồm: Hero, Đếm ngược, Khung thông tin (panel/facts), Chương trình
+   (timeline), Thư viện ảnh (gallery), Chân trang (footer).
+   Form và tường lời chúc nằm ở rsvp.css; nút nhạc ở player.css.
+   ===================================================================== */
+
+/* ---------- HERO (đầu trang) ---------- */
+.hero {
+  padding-block: max(40px, 6vh) 24px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+}
+.hero .group { font-size: 12px; letter-spacing: .38em; text-transform: uppercase; color: var(--gold); font-weight: 500; }
+.hero h1 {
+  font-size: clamp(34px, 10.5vw, 58px);  /* tự co giãn theo màn hình */
+  letter-spacing: .14em; font-weight: 600;
+  padding-left: .14em;                   /* bù khoảng cách chữ cuối để căn giữa chuẩn */
+}
+/* Số năm khổng lồ: chữ tô gradient vàng (background-clip: text) */
+.year {
+  font-family: var(--font-display); font-weight: 700; line-height: .9;
+  font-size: clamp(96px, 32vw, 168px); letter-spacing: .02em;
+  background: linear-gradient(180deg, #f6e2ac 0%, #d8b46e 45%, #a97e36 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 6px 24px rgba(216, 180, 110, .22)); /* quầng sáng vàng */
+}
+.hero p.welcome { max-width: 34ch; color: var(--text); font-size: 16px; font-weight: 300; }
+.hero .signoff { font-family: var(--font-display); font-style: italic; font-size: 20px; color: var(--champagne); }
+
+/* Hoạt ảnh vào khi phong bì mở xong (body có class "opened" do envelope.js thêm).
+   Mỗi phần tử trễ thêm 0.12s so với phần tử trước -> hiện lần lượt từ trên xuống. */
+.opened .hero > * { animation: rise .9s cubic-bezier(.2, .7, .2, 1) both; }
+.opened .hero > *:nth-child(2) { animation-delay: .12s; }
+.opened .hero > *:nth-child(3) { animation-delay: .24s; }
+.opened .hero > *:nth-child(4) { animation-delay: .36s; }
+.opened .hero > *:nth-child(5) { animation-delay: .48s; }
+.opened .hero > *:nth-child(6) { animation-delay: .6s; }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+/* ---------- ĐẾM NGƯỢC ---------- */
+.count { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; } /* 4 ô đều nhau */
+.unit {
+  background: linear-gradient(180deg, rgba(142, 31, 49, .35), rgba(42, 10, 18, .7));
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px 4px 12px; text-align: center;
+  min-width: 0;                          /* cho phép ô co lại, không làm tràn trang */
+}
+.unit b {
+  display: block; font-family: var(--font-display);
+  font-size: clamp(34px, 10vw, 52px); line-height: 1;
+  color: var(--champagne); font-weight: 600;
+  font-variant-numeric: tabular-nums;    /* các chữ số rộng bằng nhau -> số không "nhảy" */
+}
+.unit span { display: block; margin-top: 8px; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+.count-note { margin-top: 16px; text-align: center; color: var(--muted); font-size: 13px; }
+
+/* ---------- KHUNG NỔI (panel) + DANH SÁCH THÔNG TIN (facts) ---------- */
+.panel {
+  position: relative;
+  background: linear-gradient(180deg, rgba(58, 13, 22, .75), rgba(30, 8, 14, .85));
+  border: 1px solid var(--line); border-radius: 14px; padding: 26px 22px;
+}
+/* Viền mảnh thứ hai bên trong, tạo cảm giác khung thiệp */
+.panel::before { content: ""; position: absolute; inset: 6px; border: 1px solid rgba(216, 180, 110, .14); border-radius: 9px; pointer-events: none; }
+
+.facts { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.facts li {
+  display: grid; grid-template-columns: 96px 1fr; gap: 14px;  /* cột nhãn | cột giá trị */
+  padding-block: 16px; border-top: 1px solid var(--line); align-items: baseline;
+}
+.facts li:first-child { border-top: 0; padding-top: 0; }
+.facts li:last-child { padding-bottom: 0; }
+.facts .k { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); font-weight: 500; }
+.facts .v { min-width: 0; }
+.facts .v strong { display: block; font-family: var(--font-display); font-size: 24px; line-height: 1.15; color: var(--champagne); font-weight: 600; text-transform: capitalize; }
+.facts .v span { color: var(--muted); font-size: 13.5px; }
+
+/* ---------- CHƯƠNG TRÌNH (timeline) ---------- */
+.timeline { list-style: none; margin: 0; padding: 0; position: relative; display: grid; gap: 22px; }
+/* Đường dọc nối các mốc, mờ dần ở hai đầu */
+.timeline::before {
+  content: ""; position: absolute; left: 62px; top: 6px; bottom: 6px; width: 1px;
+  background: linear-gradient(180deg, transparent, var(--gold) 12%, var(--gold) 88%, transparent);
+}
+.timeline li { display: grid; grid-template-columns: 50px 26px 1fr; gap: 6px; align-items: start; position: relative; } /* giờ | chấm | nội dung */
+.timeline time { font-family: var(--font-display); font-size: 22px; font-weight: 600; color: var(--champagne); font-variant-numeric: tabular-nums; line-height: 1.2; }
+.timeline .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--ink); border: 2px solid var(--gold); margin: 8px 0 0 7px; position: relative; z-index: 1; }
+.timeline h3 { font-size: 20px; margin-bottom: 2px; }
+.timeline p { color: var(--muted); font-size: 13.5px; }
+
+/* ---------- THƯ VIỆN ẢNH ---------- */
+.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } /* lưới 2 cột */
+.tile {
+  position: relative; overflow: hidden; margin: 0;
+  border-radius: 10px; border: 1px solid var(--line);
+  aspect-ratio: 4 / 5;                   /* ô dọc */
+  min-width: 0; background: var(--wine);
+}
+.tile:first-child { grid-column: span 2; aspect-ratio: 16 / 10; } /* ảnh đầu: ngang, rộng gấp đôi */
+.tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s ease; }
+.tile:hover img { transform: scale(1.04); }  /* phóng nhẹ khi rê chuột */
+.tile .art { position: absolute; inset: 0; transition: transform .8s ease; } /* nền màu khi chưa có ảnh */
+.tile:hover .art { transform: scale(1.05); }
+/* Chú thích đè lên đáy ảnh, nền mờ dần để chữ dễ đọc */
+.tile figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 34px 14px 12px;
+  background: linear-gradient(180deg, transparent, rgba(16, 4, 8, .88));
+  display: flex; flex-direction: column; gap: 2px;
+}
+.tile figcaption small { font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
+.tile figcaption span { font-family: var(--font-display); font-size: 19px; color: var(--champagne); font-weight: 600; line-height: 1.15; }
+
+/* ---------- CHÂN TRANG ---------- */
+footer { margin-top: 64px; text-align: center; color: var(--muted); font-size: 13px; display: grid; gap: 8px; justify-items: center; }
+footer .big { font-family: var(--font-display); font-style: italic; font-size: 26px; color: var(--champagne); }
+
+/* ---------- MÀN HÌNH RẤT HẸP (<= 380px) ---------- */
+@media (max-width: 380px) {
+  .facts li { grid-template-columns: 1fr; gap: 4px; }   /* nhãn nằm trên giá trị */
+  .timeline::before { left: 56px; }
+  .timeline li { grid-template-columns: 44px 26px 1fr; }
+}
